@@ -152,7 +152,7 @@ function Index({ children }) {
       </div>
       {children}
       <footer className='bg-gray-800 text-white flex h-20 justify-center items-center'>
-        <p>Rodmay Design Website@2020</p>
+        <p>Rodmay Design Website@2020 Thailand</p>
       </footer>
     </>
   );
