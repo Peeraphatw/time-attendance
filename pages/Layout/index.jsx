@@ -81,7 +81,7 @@ function Index({ children }) {
           href='logo'
           className='text-2xl font-bold text-[#6D2B83] flex-shrink-0 mt-2'
         >
-          <img src='/logo.png' width='65' height='65' alt='logo' />
+          <img src='/Logo.png' width='65' height='65' alt='logo' />
         </a>
         <nav className='hidden sm:hidden md:flex w-full mt-1 '>
           {lists.map((item, index) => {
