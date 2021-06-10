@@ -1,24 +1,104 @@
 import Link from 'next/link';
+import Head from 'next/head';
 import { useState, useEffect, useRef } from 'react';
-const lists = ['home', 'overview', 'product', 'contact', 'about', 'help'];
+import { useRouter } from 'next/router';
+import NProgress from 'nprogress';
+import Image from 'next/image';
+
+import {
+  FaHome,
+  FaSuitcase,
+  FaAddressCard,
+  FaTelegramPlane,
+  FaQuestionCircle,
+} from 'react-icons/fa';
+const lists = [
+  {
+    name: 'หน้าหลัก',
+    path: '/',
+    icon: FaHome,
+  },
+  {
+    name: 'ผลงาน',
+    path: 'product',
+    icon: FaSuitcase,
+  },
+  {
+    name: 'ติดต่อ',
+    path: 'contact',
+    icon: FaAddressCard,
+  },
+  {
+    name: 'เกี่ยวกับเรา',
+    path: 'about us',
+    icon: FaTelegramPlane,
+  },
+  {
+    name: 'ช่วยเหลือ',
+    path: 'help',
+    icon: FaQuestionCircle,
+  },
+];
+
 function Index({ children }) {
   const [isClick, setIsClick] = useState(false);
   const sideBarRef = useRef();
-
+  const overlayRef = useRef();
+  const router = useRouter();
+  const outsideClick = (e) => {
+    e.target === overlayRef.current && setIsClick(false);
+  };
   useEffect(() => {
+    router.events.on('routeChangeStart', () => {
+      NProgress.configure({ showSpinner: false });
+      NProgress.start();
+    });
+
+    router.events.on('routeChangeComplete', () => {
+      NProgress.done();
+    });
+
+    window.addEventListener('click', outsideClick);
     if (isClick) {
       sideBarRef.current.classList.toggle('-translate-x-64');
     }
+
+    return () => {
+      window.removeEventListener('click', outsideClick);
+      NProgress.done();
+    };
   }, [isClick]);
   return (
     <>
-      <div className='header  bg-gray-800 text-white w-full h-20 flex items-center justify-between px-2 shadow-md border-b-8 border-green-400'>
-        <a href='logo' className='text-2xl font-bold'>
-          Logo
+      <Head>
+        <link
+          rel='stylesheet'
+          href='https://unpkg.com/nprogress@0.2.0/nprogress.css'
+        />
+      </Head>
+      <div className='header fixed flex  top-0 bg-[#6D2B83] text-white w-full h-20 items-center justify-between px-2 shadow-2xl border-b-8 border-[#6D2B83] z-20'>
+        <a
+          href='logo'
+          className='text-2xl font-bold text-[#6D2B83] flex-shrink-0 mt-2'
+        >
+          <Image src='/logo.png' width='65' height='65' alt='logo' />
         </a>
+        <nav className='hidden sm:hidden md:flex w-full mt-1 '>
+          {lists.map((item, index) => {
+            return (
+              <Link key={index} href={`${item.path}`}>
+                <a className=' ml-5 hover:text-gray-400 mx-auto flex font-sans font-bold text-md'>
+                  <item.icon className='h-6 w-6  mb-2' />
+                  <p className='text-1xl ml-4 capitalize'>{item.name}</p>
+                </a>
+              </Link>
+            );
+          })}
+        </nav>
+
         <svg
           xmlns='http://www.w3.org/2000/svg'
-          className='h-10 w-10 cursor-pointer'
+          className='h-10 w-10 cursor-pointer block sm:block md:hidden'
           viewBox='0 0 20 20'
           fill='currentColor'
           onClick={() => setIsClick(!isClick)}
@@ -31,19 +111,20 @@ function Index({ children }) {
         </svg>
       </div>
       <div
+        ref={overlayRef}
         className={`overlay fixed ${
           isClick ? 'block' : 'hidden'
-        } h-screen w-screen top-0 left-0 right-0 buttom-0 bg-gray-700 bg-opacity-50 `}
+        } h-screen w-screen top-0 left-0 right-0 buttom-0 bg-gray-700 bg-opacity-50 z-30`}
       ></div>
       <div
         ref={sideBarRef}
-        className={` sidebar fixed top-0 w-5/12 flex flex-col bg-gray-900 text-white z-20 h-screen  -right-64 transition transform  duration-300 ease-in-out ${
+        className={` sidebar fixed top-0 w-5/12 flex flex-col bg-gray-900 text-white z-40 h-screen -right-64  transition transform  duration-500 ease-out ${
           isClick ? 'block  ' : 'hidden '
         }`}
       >
         <svg
           xmlns='http://www.w3.org/2000/svg'
-          className='h-6 w-6 m-1 bg-green-400 rounded-sm cursor-pointer self-end'
+          className='h-6 w-6 m-1 bg-purple-400 rounded-sm cursor-pointer self-start'
           viewBox='0 0 20 20'
           onClick={() => setIsClick(false)}
           fill='currentColor'
@@ -54,20 +135,25 @@ function Index({ children }) {
             clipRule='evenodd'
           />
         </svg>
-        {lists.map((item) => {
+        {lists.map((item, index) => {
           return (
-            <Link href={`/${item}`}>
+            <Link href={`${item.path}`} key={index}>
               <a
                 onClick={() => setIsClick(false)}
-                className=' font-semibold text-lg hover:text-green-800  stroke-current stroke-1 hover:bg-white w-100 px-5 capitalize'
+                className='flex  items-center font-semibold text-lg hover:text-purple-800 active:bg-white active:text-purple-800  stroke-current stroke-1 hover:bg-white w-100 px-5 capitalize'
               >
-                {item}
+                <item.icon className='w-5 h-5' />
+
+                <span className='block ml-2'>{item.name}</span>
               </a>
             </Link>
           );
         })}
       </div>
-      <div className='main'>{children}</div>
+      {children}
+      <footer className='bg-gray-800 text-white flex h-20 justify-center items-center'>
+        <p>Rodmay Design Website@2020</p>
+      </footer>
     </>
   );
 }
