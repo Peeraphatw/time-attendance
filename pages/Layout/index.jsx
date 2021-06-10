@@ -118,7 +118,7 @@ function Index({ children }) {
       ></div>
       <div
         ref={sideBarRef}
-        className={` sidebar fixed top-0 w-5/12 flex flex-col bg-gray-900 text-white z-40 h-screen -right-64  transition transform  duration-500 ease-out ${
+        className={` sidebar fixed top-0 w-10/12 flex flex-col bg-gray-900 text-white z-40 h-screen -right-64  transition transform  duration-500 ease-out ${
           isClick ? 'block  ' : 'hidden '
         }`}
       >
